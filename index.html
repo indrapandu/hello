@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5eee4">
+  <meta name="description" content="A little hello, just for you.">
+  <title>A little hello ♡</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23f5dace'/%3E%3Cpath d='M32 48 13 30C0 13 24 6 32 21 40 6 64 13 51 30Z' fill='%23a65340'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #49382f;
+      --muted: #7a6b61;
+      --accent: #a65340;
+      --accent-dark: #88412f;
+      --peach: #f5dace;
+      --sage: #819683;
+      --paper: #fffaf1;
+      --line: #e8dfd2;
+      --error: #a13932;
+      --ease: cubic-bezier(.2, .7, .2, 1);
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { min-width: 280px; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 46px 22px;
+      color: var(--ink);
+      background-color: #f5eee4;
+      background-image: radial-gradient(#c9bca844 .8px, transparent .8px);
+      background-size: 18px 18px;
+      font-family: "Avenir Next", "Segoe UI", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      z-index: -1;
+      pointer-events: none;
+      filter: blur(5px);
+    }
+    body::before { top: -200px; right: -140px; background: #ead4c466; }
+    body::after { bottom: -250px; left: -140px; background: #d5dfcf80; }
+    button, input, textarea { font: inherit; }
+    button, label { -webkit-tap-highlight-color: transparent; }
+    button { cursor: pointer; }
+    button:disabled { cursor: default; }
+    :focus-visible { outline: 3px solid #557769; outline-offset: 5px; }
+    h1:focus, h2:focus { outline: none; }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    }
+    .ambient { position: fixed; inset: 0; overflow: hidden; z-index: -1; pointer-events: none; }
+    .ambient span { position: absolute; animation: drift 9s ease-in-out infinite; }
+    .ambient .heart { color: #b7867544; font: 60px Georgia, serif; top: 19%; left: 12%; transform: rotate(-15deg); }
+    .ambient .star { color: #83988188; font-size: 36px; right: 13%; top: 38%; animation-delay: -3s; }
+    .ambient .petal { width: 32px; height: 55px; border-radius: 80% 0 80% 0; background: #a5b39c55; bottom: 17%; left: 19%; transform: rotate(35deg); animation-delay: -5s; }
+    .shell { width: min(100%, 600px); position: relative; }
+    .masthead {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 13px 21px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 2.1px;
+      text-transform: uppercase;
+    }
+    .masthead .tiny-heart { color: var(--accent); font-size: 23px; line-height: 1; }
+    .paper {
+      position: relative;
+      isolation: isolate;
+      background: var(--paper);
+      border: 1px solid #fffefa;
+      border-radius: 25px;
+      box-shadow: 0 20px 65px -28px #65544242, 0 2px 6px #65544208;
+      overflow: hidden;
+    }
+    .paper::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 6px;
+      background: repeating-linear-gradient(125deg, #d89982 0 18px, #fffaf1 18px 25px, #acb9a4 25px 43px, #fffaf1 43px 50px);
+      opacity: .7;
+    }
+    .screen { padding: 40px 47px 42px; animation: arrive .42s var(--ease) both; }
+    .screen.leaving { animation: depart .18s ease-in both; pointer-events: none; }
+    .screen--center { text-align: center; }
+    .screen--password { padding-top: 38px; padding-bottom: 49px; }
+    .scene { width: min(100%, 380px); aspect-ratio: 440 / 280; display: block; margin: 0 auto 12px; overflow: visible; }
+    .screen--password .scene { width: 290px; margin-bottom: 19px; }
+    .screen--welcome .scene { width: 370px; margin-bottom: 13px; }
+    .eyebrow {
+      margin: 0 0 13px;
+      color: #886d59;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2.2px;
+    }
+    h1, h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 400;
+      letter-spacing: -1.5px;
+      text-wrap: balance;
+    }
+    h1 { font-size: clamp(38px, 7.7vw, 57px); line-height: 1.08; margin: 0 0 16px; }
+    h2 { font-size: clamp(30px, 6vw, 39px); line-height: 1.18; margin: 0 0 14px; }
+    .screen--password h1 { font-size: clamp(30px, 6vw, 38px); letter-spacing: -1px; margin-bottom: 27px; }
+    .accent { color: var(--accent); font-style: italic; }
+    .support { margin: 0 auto 29px; font-size: 14px; line-height: 1.8; color: var(--muted); max-width: 350px; }
+    .signature { margin: 26px 0 0; font-family: Georgia, serif; font-size: 13px; font-style: italic; color: #8f806f; }
+    .password-field { position: relative; max-width: 340px; margin: 0 auto; }
+    .password-field svg { width: 19px; height: 19px; position: absolute; left: 18px; top: 19px; color: #998271; pointer-events: none; }
+    input[type="password"], textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fffdf7;
+      border-radius: 13px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input[type="password"] { height: 57px; padding: 14px 20px 14px 49px; letter-spacing: 2px; font-size: 17px; }
+    input[type="password"]::placeholder { letter-spacing: 3px; color: #baa797; }
+    input[type="password"]:focus, textarea:focus { border-color: var(--sage); box-shadow: 0 0 0 3px #81968321; }
+    textarea { display: block; padding: 16px 17px; min-height: 132px; resize: vertical; line-height: 1.75; font-size: 16px; }
+    textarea::placeholder { font-size: 14px; color: #9a8b7e; }
+    .writing-paper { background-image: linear-gradient(transparent 27px, #ece4d757 28px); background-size: 100% 28px; background-position: 0 16px; }
+    .long-answer { min-height: 187px; }
+    .primary {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 21px;
+      padding: 16px 24px;
+      min-height: 54px;
+      border: 1px solid transparent;
+      border-radius: 13px;
+      background: var(--accent);
+      color: #fffaf1;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: .1px;
+      box-shadow: 0 4px 0 #873f2d17;
+      transition: background .2s, transform .2s, opacity .2s;
+    }
+    .primary:hover:not(:disabled) { background: var(--accent-dark); transform: translateY(-2px); }
+    .primary:active:not(:disabled) { transform: translateY(0); }
+    .primary:disabled { opacity: .7; }
+    .primary .arrow { font-size: 21px; font-weight: 400; line-height: 1; }
+    .password-submit { display: flex; width: 100%; max-width: 340px; margin: 15px auto 0; }
+    .screen--welcome .primary { min-width: 190px; }
+    .form-footer { display: flex; justify-content: flex-end; padding-top: 7px; }
+    .form-footer .primary { min-width: 168px; }
+    .chapter-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 29px; }
+    .chapter-header .eyebrow { margin: 0; }
+    .progress { display: flex; gap: 7px; }
+    .progress span { width: 7px; height: 7px; border-radius: 50%; background: #e5ddcf; }
+    .progress span.active { background: var(--sage); }
+    .progress span.current { background: var(--accent); box-shadow: 0 0 0 3px #a6534011; }
+    .question-note { color: var(--muted); font-size: 13px; line-height: 1.7; margin: 10px 0 25px; }
+    fieldset { min-width: 0; border: 0; margin: 0; padding: 0; }
+    .choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; margin-top: 23px; }
+    .choice { position: relative; min-width: 0; cursor: pointer; }
+    .choice input, .date-choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .choice-face {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-height: 84px;
+      padding: 17px 18px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fffdf8;
+      transition: border-color .2s, background .2s, transform .2s;
+    }
+    .choice-face > svg { width: 36px; height: 36px; flex-shrink: 0; }
+    .choice-face strong { font-size: 15px; font-weight: 600; }
+    .choice-mark { margin-left: auto; border: 1px solid #cfc2b1; width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center; }
+    .choice-mark::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: transparent; }
+    .choice:hover .choice-face { border-color: #b7a08b; transform: translateY(-2px); }
+    .choice input:checked + .choice-face { background: #edf1e8; border-color: #819683; }
+    .choice input:checked + .choice-face .choice-mark { border-color: #718b71; background: #718b71; }
+    .choice input:checked + .choice-face .choice-mark::after { background: white; }
+    .choice input:focus-visible + .choice-face, .date-choice input:focus-visible + .day { outline: 3px solid #557769; outline-offset: 4px; }
+    .field-label { display: block; font-size: 14px; font-weight: 600; line-height: 1.6; margin: 7px 0 10px; }
+    .error { min-height: 20px; margin: 8px 0 9px; font-size: 12px; color: var(--error); line-height: 1.5; }
+    .error:empty { margin-top: 5px; min-height: 16px; }
+    [aria-invalid="true"] { border-color: var(--error); }
+    .little-divider { display: flex; align-items: center; gap: 14px; color: #ac8e7a; margin: 25px 0 23px; font-size: 18px; }
+    .little-divider::before, .little-divider::after { content: ""; flex: 1; border-top: 1px dashed #dacdbc; }
+    .note-illustration { width: 84px; height: 67px; margin: 4px 0 23px; color: var(--accent); transform: rotate(-6deg); }
+    .reveal { display: grid; grid-template-rows: 0fr; opacity: 0; visibility: hidden; transition: grid-template-rows .35s var(--ease), opacity .3s, visibility .35s; }
+    .reveal.is-open { grid-template-rows: 1fr; opacity: 1; visibility: visible; }
+    .reveal > div { min-height: 0; overflow: hidden; }
+    .date-panel { margin-top: 7px; padding: 19px 20px 7px; border: 1px solid var(--line); border-radius: 16px; background: #faf5e9; }
+    .date-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 20px; font-size: 13px; font-weight: 600; }
+    .date-heading small { color: #8b7765; font-weight: 400; font-size: 11px; }
+    .date-panel legend { font-size: 12px; font-weight: 600; margin-bottom: 10px; padding: 0; }
+    .date-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
+    .date-choice { position: relative; cursor: pointer; }
+    .day { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-height: 66px; border: 1px solid #e5dccb; border-radius: 10px; background: #fffdf7; transition: background .2s, border-color .2s; }
+    .day small { font-size: 9px; letter-spacing: .6px; color: #7f7163; }
+    .day strong { font-size: 18px; font-weight: 500; }
+    .date-choice input:checked + .day { background: var(--accent); color: #fffaf1; border-color: var(--accent); }
+    .date-choice input:checked + .day small { color: #fffaf1; }
+    .date-choice input:disabled + .day { opacity: .35; background: #eee9df; cursor: not-allowed; }
+    .date-choice input:not(:disabled):not(:checked) + .day:hover { border-color: var(--accent); }
+    .date-hint { margin: 11px 0 16px; font-size: 11px; line-height: 1.6; color: var(--muted); }
+    .why-not { padding-top: 7px; }
+    .flight-tag { display: inline-flex; align-items: center; gap: 13px; padding: 9px 17px; margin: 0 0 23px; border: 1px dashed #c1cbbc; border-radius: 8px; font-size: 10px; letter-spacing: 2px; color: #65806b; transform: rotate(-3deg); }
+    .screen--final { padding-top: 33px; padding-bottom: 46px; }
+    .screen--final h1 { font-size: clamp(34px, 7vw, 47px); }
+    .screen--final .support { margin-bottom: 0; }
+    .screen--rejected { padding-block: 45px 52px; }
+    .screen--rejected h1 { font-size: clamp(29px, 6vw, 37px); line-height: 1.25; max-width: 390px; margin: 0 auto; }
+    .plane-float { animation: flying 4s ease-in-out infinite; transform-origin: center; }
+    .propeller { animation: propeller .13s linear infinite; transform-box: fill-box; transform-origin: center; }
+    .cloud-one { animation: cloudMove 7s ease-in-out infinite; }
+    .cloud-two { animation: cloudMove 10s ease-in-out -4s infinite reverse; }
+    .wave-hand { animation: wave 2.7s ease-in-out infinite; transform-box: fill-box; transform-origin: 25% 90%; }
+    .sleep-breathe { animation: breathe 3.8s ease-in-out infinite; transform-box: fill-box; transform-origin: bottom; }
+    .sleep-z { animation: sleepy 3s ease-in-out infinite; }
+    .sleep-z:nth-of-type(2) { animation-delay: 1s; }
+    .screen--password .scene, .screen--rejected .scene { animation: drift 6s ease-in-out infinite; }
+    @keyframes arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes depart { to { opacity: 0; transform: translateY(-7px); } }
+    @keyframes drift { 0%, 100% { translate: 0 0; } 50% { translate: 0 -9px; } }
+    @keyframes flying { 0%, 100% { transform: translate(-5px, 4px) rotate(-2deg); } 50% { transform: translate(6px, -8px) rotate(1deg); } }
+    @keyframes cloudMove { 0%, 100% { translate: -12px 0; } 50% { translate: 18px 0; } }
+    @keyframes propeller { 0%, 100% { scale: 1 1; } 50% { scale: 1 .2; } }
+    @keyframes wave { 0%, 40%, 100% { rotate: 0deg; } 12%, 28% { rotate: 15deg; } 20% { rotate: -8deg; } }
+    @keyframes breathe { 0%, 100% { scale: 1 1; } 50% { scale: 1 1.025; } }
+    @keyframes sleepy { 0% { opacity: 0; translate: 0 6px; } 30%, 70% { opacity: 1; } 100% { opacity: 0; translate: 9px -15px; } }
+    @media (max-width: 520px) {
+      body { padding: 24px 15px; }
+      .paper { border-radius: 21px; }
+      .screen { padding: 31px 25px 33px; }
+      .screen--password { padding-top: 36px; padding-bottom: 39px; }
+      .screen--password .scene { width: 255px; }
+      .screen--welcome .scene { width: 305px; }
+      .masthead { padding-inline: 5px; font-size: 9px; letter-spacing: 1.7px; }
+      .choice-face { padding: 15px 12px; gap: 9px; min-height: 79px; }
+      .choice-face > svg { width: 29px; height: 29px; }
+      .choice-grid { gap: 10px; }
+      .date-panel { padding: 16px 12px 5px; }
+      .date-grid { gap: 5px; }
+      .day { min-height: 62px; }
+      .form-footer .primary { width: 100%; }
+      .ambient .heart { left: -20px; }
+      .ambient .star { right: -15px; }
+    }
+    @media (max-width: 350px) {
+      .screen { padding-inline: 18px; }
+      .choice-face { gap: 7px; padding-inline: 10px; }
+      .choice-mark { width: 13px; height: 13px; }
+      .date-heading { flex-wrap: wrap; }
+      .date-panel { padding-inline: 8px; }
+      .day small { font-size: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"><span class="heart">♡</span><span class="star">✧</span><span class="petal"></span></div>
+  <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
+<defs>
+  <linearGradient id="paper-wash" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#fffaf1"/>
+    <stop offset="1" stop-color="#f5e9d6"/>
+  </linearGradient>
+  <linearGradient id="coral-wash" x1="0" y1="0" x2="0.8" y2="1">
+    <stop offset="0" stop-color="#dfa38c"/>
+    <stop offset="1" stop-color="#c47761"/>
+  </linearGradient>
+  <linearGradient id="sage-wash" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#b3c5af"/>
+    <stop offset="1" stop-color="#819683"/>
+  </linearGradient>
+  <symbol id="scene-letter" viewBox="0 0 440 280">
+    <ellipse cx="222" cy="241" rx="110" ry="12" fill="#49382f" opacity=".055"/>
+    <circle cx="220" cy="138" r="103" fill="#f3e4d7" opacity=".6"/>
+    <path d="M98 166c-39-69 29-142 97-120" fill="none" stroke="#c47761" stroke-width="1.5" stroke-dasharray="3 8" opacity=".45"/>
+    <g transform="rotate(-8 220 145)" stroke="#49382f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="106" y="77" width="229" height="148" rx="12" fill="url(#paper-wash)"/>
+      <path d="m110 214 91-72c11-9 25-9 37 0l93 72" fill="#f5e6d2"/>
+      <path d="m111 82 99 77c6 5 14 5 20 0l100-77" fill="#fffaf1"/>
+      <path d="m113 217 80-63m57-1 79 64" fill="none" opacity=".2"/>
+      <path d="M220 150c-13-20-33-10-31 5 2 14 31 32 31 32s28-18 30-32c2-15-18-25-30-5Z" fill="url(#coral-wash)"/>
+      <path d="M200 154c1-4 5-6 8-5" fill="none" stroke="#fffaf1" stroke-width="3" opacity=".7"/>
+      <rect x="285" y="88" width="33" height="39" rx="3" fill="#dbe8e6" stroke="#819683" stroke-width="1.3" stroke-dasharray="2 3"/>
+      <path d="m295 111 6-13 7 13-7-3Z" fill="#819683" stroke="none"/>
+      <path d="M123 195h24m-24 7h15" stroke="#c9b59f" stroke-width="1.6"/>
+    </g>
+    <g transform="translate(323 180) rotate(17)" stroke="#819683" stroke-width="2" stroke-linecap="round">
+      <path d="M0 49C-6 28 0 17 0 0" fill="none"/>
+      <path d="M-2 33c-16-14-24-4-9 4Z" fill="#b2c2a6"/>
+      <g fill="#fffaf1" stroke="#d9c7af" stroke-width="1.1">
+        <ellipse cy="-13" rx="7" ry="13"/>
+        <ellipse cy="-13" rx="7" ry="13" transform="rotate(60)"/>
+        <ellipse cy="-13" rx="7" ry="13" transform="rotate(120)"/>
+        <ellipse cy="-13" rx="7" ry="13" transform="rotate(180)"/>
+        <ellipse cy="-13" rx="7" ry="13" transform="rotate(240)"/>
+        <ellipse cy="-13" rx="7" ry="13" transform="rotate(300)"/>
+      </g>
+      <circle r="8" fill="#dec27e" stroke="#b69a62" stroke-width="1.1"/>
+    </g>
+    <g fill="none" stroke="#c47761" stroke-width="1.8" stroke-linecap="round">
+      <path d="M83 87v12m-6-6h12M345 69v10m-5-5h10"/>
+      <path d="m356 132 2 3 4-1-2 4 2 3-4-1-3 3v-4l-3-2 4-1Z" fill="#dec27e" stroke="none"/>
+    </g>
+    <circle cx="92" cy="218" r="3" fill="#819683" opacity=".65"/>
+  </symbol>
+  <symbol id="scene-welcome" viewBox="0 0 440 280">
+    <ellipse cx="225" cy="250" rx="108" ry="11" fill="#49382f" opacity=".06"/>
+    <circle cx="222" cy="143" r="109" fill="#f5dace" opacity=".55"/>
+    <g stroke="#49382f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M109 139 205 56c8-7 19-7 27 0l97 83v99H109Z" fill="#e4c8a9"/>
+      <path d="m112 140 107 57 108-57" fill="none" opacity=".15"/>
+      <path d="M174 154c2-26 21-39 44-39 23 0 45 14 47 41l8 38H166Z" fill="url(#sage-wash)"/>
+      <path d="M202 118v14c8 10 20 10 29-1v-14" fill="#edbea0"/>
+      <g class="wave-hand">
+        <path d="m250 143 22-18 4-28c-6-9-6-14-2-15 3-1 6 5 8 6l-3-21c-1-6 5-7 7-2l5 18-1-22c0-6 6-6 7-1l2 22 4-17c1-5 7-4 6 2l-3 22 5-9c3-4 8-1 5 4l-10 22-9 35-28 28Z" fill="#efc4a8"/>
+        <path d="m249 137 19-15 18 27-20 20" fill="#93a88e"/>
+        <path d="m286 92 8 4-5 9" fill="none" stroke-width="1.4"/>
+      </g>
+      <path d="m178 141-18 17-17-7c-10-8-18-5-16 2-7 0-8 7-1 10l30 16c7 3 12 0 17-5l15-17" fill="#efc4a8"/>
+      <path d="m183 136-19 18 14 17 12-14" fill="#93a88e"/>
+      <ellipse cx="180" cy="92" rx="7" ry="10" fill="#efc4a8"/>
+      <ellipse cx="252" cy="92" rx="7" ry="10" fill="#efc4a8"/>
+      <path d="M181 75c1-27 70-29 71 2l-2 25c-4 22-23 29-34 29-12 0-31-9-35-30Z" fill="#efc4a8"/>
+      <path d="M181 88c-13-30 3-52 23-53-2-8 14-10 21-3 22-5 40 16 29 47l-7 8-5-25c-13 12-23 11-27 1-9 10-22 11-29 9Z" fill="#49382f"/>
+      <path d="M195 48c8-5 15-5 21-3" fill="none" stroke="#725849" stroke-width="3"/>
+      <path d="M195 93c3-4 7-4 10 0m24 0c3-4 7-4 10 0" fill="none" stroke-width="2.6"/>
+      <path d="M209 109c4 5 11 5 16-1" fill="none"/>
+      <path d="m216 96-2 5 4 1" fill="none" stroke="#c58f70" stroke-width="1.3"/>
+      <path d="M108 141 215 198c3 2 7 2 10 0l105-57v91c0 7-5 12-12 12H120c-7 0-12-5-12-12Z" fill="url(#paper-wash)"/>
+      <path d="m110 239 78-59m141 59-77-58" fill="none" stroke="#cfbca5" stroke-width="1.5"/>
+      <path d="M220 209c-9-13-23-7-21 4 1 9 21 21 21 21s20-12 21-21c2-11-12-17-21-4Z" fill="#c47761" stroke="none"/>
+    </g>
+    <ellipse cx="194" cy="104" rx="7" ry="4" fill="#df967f" opacity=".5"/>
+    <ellipse cx="239" cy="104" rx="7" ry="4" fill="#df967f" opacity=".5"/>
+    <g fill="none" stroke="#c47761" stroke-width="2" stroke-linecap="round">
+      <path d="m322 67 8-6m-5 18 12-1m-26-23 3-9M100 102v12m-6-6h12"/>
+      <path d="M126 67c-6-9-15-4-13 2 1 6 13 13 13 13s11-9 11-14c0-8-9-10-11-1Z" fill="#dfa38c" stroke="none"/>
+    </g>
+    <circle cx="351" cy="179" r="4" fill="#819683" opacity=".7"/>
+  </symbol>
+  <symbol id="scene-plane" viewBox="0 0 440 280">
+    <circle cx="222" cy="138" r="111" fill="#dbe8e6" opacity=".62"/>
+    <g class="cloud cloud-one" fill="#fffaf1" stroke="#c6d7d1" stroke-width="1.2">
+      <path d="M39 100c-15-1-15-23 1-25-1-23 32-27 40-7 19-9 33 8 27 20 16-2 20 20 3 22H43c-8 0-10-5-4-10Z"/>
+    </g>
+    <g class="cloud cloud-two" fill="#fffaf1" stroke="#c6d7d1" stroke-width="1.2">
+      <path d="M337 206c-14-1-15-21-1-23 0-21 29-24 36-6 17-8 30 5 25 16 15-1 18 18 3 21h-60c-7 0-9-4-3-8Z"/>
+    </g>
+    <path d="M67 199c19 4 45-1 53-13" fill="none" stroke="#819683" stroke-width="1.5" stroke-dasharray="3 7" opacity=".6"/>
+    <g class="plane-float">
+      <g transform="rotate(-7 220 149)" stroke="#49382f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m239 90-23 4-18-17-21 11 18 17 36-1" fill="#c47761"/>
+        <path d="M200 138c-1-18 10-37 28-38 15-1 32 10 34 34" fill="url(#sage-wash)"/>
+        <path d="M214 96v15c5 7 16 7 23 0V96" fill="#edbea0"/>
+        <ellipse cx="202" cy="72" rx="6" ry="9" fill="#efc4a8"/>
+        <path d="M204 47c6-12 46-16 49 11l-1 23c-1 16-14 27-27 27-14 0-25-13-25-29Z" fill="#efc4a8"/>
+        <path d="M201 75c-13-21-6-42 17-45 19-11 45 6 39 28l-9 15-4-18c-10 5-20 3-23-4l-13 9-1 16Z" fill="#49382f"/>
+        <path d="M200 53c13-11 35-11 51-1" fill="none" stroke="#dec27e" stroke-width="7"/>
+        <g fill="#dbe8e6" stroke="#80644b" stroke-width="2.4">
+          <rect x="207" y="46" width="17" height="13" rx="5" transform="rotate(-8 215 53)"/>
+          <rect x="230" y="46" width="17" height="13" rx="5" transform="rotate(8 238 53)"/>
+          <path d="M225 51h5" fill="none"/>
+        </g>
+        <path d="M217 78v3m21-3v3" fill="none" stroke-width="3"/>
+        <path d="M222 93c5 3 10 2 13-2" fill="none"/>
+        <ellipse cx="243" cy="87" rx="5" ry="3" fill="#df967f" stroke="none"/>
+        <path d="M139 147 120 104l-25 1 8 47Z" fill="url(#coral-wash)"/>
+        <path d="m103 122 27 1" fill="none" stroke="#fffaf1" stroke-width="5"/>
+        <path d="M110 141c35-8 72-4 104-4l34-3c23-19 51-23 67-7 23 22 15 47-8 55-46 16-145 7-190-13-11-4-17-17-7-28Z" fill="url(#coral-wash)"/>
+        <path d="M127 161c40 11 86 17 134 12" fill="none" stroke="#fffaf1" stroke-width="5" opacity=".7"/>
+        <path d="M190 138c9 13 44 15 63-2" fill="#49382f"/>
+        <path d="m236 117 24 21 25-9c6-6 12-7 14-3 5-1 8 3 3 7l-36 17c-5 2-9 2-14-2l-29-20" fill="#efc4a8"/>
+        <path d="m235 114 14 12-13 16-15-13" fill="#93a88e"/>
+        <path d="M242 154 175 220c-4 4-3 10 4 10h35c5 0 10-2 13-5l67-58Z" fill="url(#paper-wash)"/>
+        <path d="m205 197 25 5m-13-17 26 5" fill="none" stroke="#c47761" stroke-width="7"/>
+        <path d="m134 153-44 23c-5 3-4 7 3 7h23l37-21" fill="#f2dbbd"/>
+        <path d="M313 125c12 11 16 32 5 48l13-1c16-12 15-33-1-45Z" fill="#dec27e"/>
+        <path d="M334 149h14" fill="none" stroke-width="4"/>
+        <g class="propeller">
+          <path d="M350 149c-15-17-18-42-9-43 11-2 14 25 9 43Z" fill="#819683"/>
+          <path d="M350 149c15 17 18 42 9 43-11 2-14-25-9-43Z" fill="#819683"/>
+        </g>
+        <circle cx="350" cy="149" r="5" fill="#49382f"/>
+      </g>
+    </g>
+    <g fill="none" stroke="#c47761" stroke-width="1.8" stroke-linecap="round">
+      <path d="M326 57v12m-6-6h12M111 225v8m-4-4h8"/>
+    </g>
+    <path d="m366 86 15 6-17 12 3-11Z" fill="#dec27e"/>
+  </symbol>
+  <symbol id="scene-sleep" viewBox="0 0 440 280">
+    <circle cx="222" cy="139" r="110" fill="#dbe8e6" opacity=".65"/>
+    <path d="M305 32c-26 16-13 51 13 45-8 15-26 18-39 9-18-13-17-38 0-50 8-6 18-7 26-4Z" fill="#dec27e" stroke="#bca46e" stroke-width="1.5"/>
+    <g fill="#c4af77">
+      <path d="m345 106 2 6 6 2-6 2-2 6-2-6-6-2 6-2ZM117 66l2 5 5 2-5 2-2 5-2-5-5-2 5-2Z"/>
+      <circle cx="141" cy="36" r="2"/><circle cx="332" cy="54" r="2"/>
+    </g>
+    <ellipse cx="224" cy="238" rx="132" ry="11" fill="#49382f" opacity=".055"/>
+    <g stroke="#49382f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M98 183h244v47H98Z" fill="#d6bca3"/>
+      <path d="M103 229v14m234-14v14" fill="none" stroke-width="8"/>
+      <rect x="89" y="172" width="260" height="58" rx="15" fill="url(#paper-wash)"/>
+      <path d="M100 211h237" stroke="#e1d2bf" stroke-width="1.5"/>
+      <path d="M93 160c13-23 75-33 103-9l-2 40c-41 10-71 10-100-1Z" fill="#fffaf1"/>
+      <path d="M100 169c16-10 50-14 77-2" stroke="#e1d2bf" stroke-width="1.5" fill="none"/>
+      <g class="sleep-breathe">
+        <path d="M169 174c16-37 74-42 110-18l35 24-39 30-108-13Z" fill="#e7c7a8"/>
+        <path d="M197 159c34-37 87-29 105-2 24 9 31 39 21 60H169l1-37Z" fill="url(#sage-wash)"/>
+        <path d="M174 175c20 16 42 20 67 21" fill="none" stroke="#bdcbb5" stroke-width="2"/>
+        <path d="M277 157c7 17 12 32 12 60" fill="none" stroke="#6f846e" stroke-width="1.4" opacity=".65"/>
+        <path d="M193 185c-9 8-15 9-26 10-15 7-28 4-28-2 0-4 7-4 12-6 8-7 16-10 25-12" fill="#efc4a8"/>
+        <path d="M133 131c15-13 45-2 48 20 6 22-8 40-27 41-23 2-38-17-38-36Z" fill="#efc4a8"/>
+        <path d="M127 169c-16-7-23-22-15-38-2-16 16-29 28-23 22-9 49 12 38 34-9 5-20-1-25-10-2 16-9 22-22 17Z" fill="#49382f"/>
+        <path d="M120 126c4-6 10-9 15-9" fill="none" stroke="#725849" stroke-width="3"/>
+        <path d="M140 166c4 4 8 5 12 3m11-13c4 4 8 4 11 1" fill="none" stroke-width="2.5"/>
+        <path d="m159 162 5 4-4 3" fill="none" stroke="#c58f70" stroke-width="1.2"/>
+        <path d="M156 179c4 2 8 1 10-1" fill="none" stroke-width="1.7"/>
+        <ellipse cx="138" cy="177" rx="7" ry="4" fill="#df967f" stroke="none" opacity=".5"/>
+      </g>
+      <rect x="81" y="155" width="11" height="85" rx="5" fill="#d6bca3"/>
+      <rect x="344" y="186" width="11" height="54" rx="5" fill="#d6bca3"/>
+    </g>
+    <g class="sleep-z" fill="#819683" font-family="Georgia, serif" font-weight="bold">
+      <text x="191" y="116" font-size="20" transform="rotate(-8 191 116)">z</text>
+      <text x="215" y="90" font-size="25" transform="rotate(8 215 90)">z</text>
+      <text x="239" y="59" font-size="30" transform="rotate(-6 239 59)">Z</text>
+    </g>
+  </symbol>
+  <symbol id="scene-rejected" viewBox="0 0 440 280">
+    <ellipse cx="219" cy="240" rx="99" ry="11" fill="#49382f" opacity=".055"/>
+    <circle cx="220" cy="139" r="103" fill="#f5dace" opacity=".5"/>
+    <g transform="rotate(7 220 147)" stroke="#49382f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M133 158c-12-1-25 5-31 16m201-17c13-1 24 5 30 16" fill="none"/>
+      <path d="m184 217-6 23-11 2m88-25 7 23 11 2" fill="none"/>
+      <rect x="128" y="93" width="180" height="125" rx="12" fill="url(#paper-wash)"/>
+      <path d="m132 213 75-61c7-6 14-6 22 0l75 61" fill="#f2dfc7" stroke="#d6bea4" stroke-width="1.5"/>
+      <path d="m132 99 73 56c8 6 16 6 24 0l74-56" fill="#fffaf1"/>
+      <path d="m184 166 11-4m47 0 11 4" fill="none" stroke-width="2.8"/>
+      <path d="M187 174v5m62-5v5" fill="none" stroke-width="3"/>
+      <path d="M210 192c5-5 12-5 17 0" fill="none"/>
+      <ellipse cx="176" cy="185" rx="8" ry="4" fill="#dfa38c" stroke="none" opacity=".5"/>
+      <ellipse cx="260" cy="185" rx="8" ry="4" fill="#dfa38c" stroke="none" opacity=".5"/>
+      <path d="m220 113-9 9 10 9-9 9" fill="none" stroke="#c47761" stroke-width="4"/>
+    </g>
+    <g fill="#dbe8e6" stroke="#819683" stroke-width="1.4" stroke-linejoin="round">
+      <path d="M314 78c0 0-11 15-10 21 1 9 17 9 18 0 1-6-8-21-8-21Z"/>
+      <path d="M118 68c0 0-8 11-8 16 1 7 14 7 14 0 0-5-6-16-6-16Z"/>
+    </g>
+    <path d="M186 63c-1-13 26-14 24-1-2 12-24 7-23-7m21 7c-1-13 26-14 24-1-2 12-24 7-23-7m21 7c-1-13 26-14 24-1-1 8-14 8-20 5" fill="none" stroke="#c47761" stroke-width="1.8" stroke-linecap="round" opacity=".7"/>
+  </symbol>
+</defs>
+
+</svg>
+  <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+    <defs>
+      <symbol id="icon-yes" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#e5eacb"/><path d="M12 15h.1m15 0h.1" stroke="#635f43" stroke-width="3.5" stroke-linecap="round"/><path d="M12 24q8 8 16 0" fill="none" stroke="#635f43" stroke-width="2" stroke-linecap="round"/><ellipse cx="9" cy="21" rx="3" ry="2" fill="#d8bca0"/><ellipse cx="31" cy="21" rx="3" ry="2" fill="#d8bca0"/></symbol>
+      <symbol id="icon-no" viewBox="0 0 40 40"><circle cx="20" cy="20" r="18" fill="#f4dfcc"/><path d="M12 16h.1m15 0h.1" stroke="#79604c" stroke-width="3.5" stroke-linecap="round"/><path d="M15 26q5-4 10 0" fill="none" stroke="#79604c" stroke-width="2" stroke-linecap="round"/><ellipse cx="9" cy="22" rx="3" ry="2" fill="#e6b6a3"/><ellipse cx="31" cy="22" rx="3" ry="2" fill="#e6b6a3"/></symbol>
+    </defs>
+  </svg>
+  <main class="shell">
+    <div class="masthead" id="masthead" hidden><span>A little hello, just for you</span><span class="tiny-heart" aria-hidden="true">♡</span></div>
+    <article class="paper" aria-label="A little hello">
+      <section class="screen screen--center screen--password" data-screen="password">
+        <svg class="scene" viewBox="0 0 440 280" aria-hidden="true"><use href="#scene-letter"/></svg>
+        <h1 id="passwordTitle" tabindex="-1" lang="id">Masukan Password</h1>
+        <form id="passwordForm" novalidate>
+          <div class="password-field">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <input id="password" type="password" aria-labelledby="passwordTitle" placeholder="••••••" autocomplete="off" autocapitalize="off" spellcheck="false" required>
+          </div>
+          <button class="primary password-submit" type="submit">Enter <span class="arrow" aria-hidden="true">→</span></button>
+        </form>
+      </section>
+
+      <section class="screen screen--center screen--welcome" data-screen="welcome" hidden>
+        <svg class="scene" viewBox="0 0 440 280" aria-hidden="true"><use href="#scene-welcome"/></svg>
+        <p class="eyebrow">Look who’s here</p>
+        <h1 tabindex="-1">Hallo <span class="accent">Wanda</span></h1>
+        <p class="support">A little hello. A few little questions.<br>And maybe a little adventure.</p>
+        <button class="primary" type="button" id="welcomeNext">Next <span class="arrow" aria-hidden="true">→</span></button>
+        <p class="signature">Take your time. I’m all ears.</p>
+      </section>
+
+      <section class="screen" data-screen="weekend" hidden>
+        <div class="chapter-header"><p class="eyebrow">01 / A little check-in</p><div class="progress" role="img" aria-label="Question 1 of 3"><span class="current"></span><span></span><span></span></div></div>
+        <h2 tabindex="-1" id="weekendTitle">How's the weekend?<br><span class="accent">Is everything ok?</span></h2>
+        <p class="question-note">The good bits, the messy bits. I’d love to hear.</p>
+        <form id="weekendForm" novalidate>
+          <fieldset aria-labelledby="weekendTitle" aria-describedby="weekendChoiceError">
+            <div class="choice-grid">
+              <label class="choice"><input type="radio" name="weekendOk" value="Yes" required><span class="choice-face"><svg aria-hidden="true"><use href="#icon-yes"/></svg><strong>Yes</strong><span class="choice-mark" aria-hidden="true"></span></span></label>
+              <label class="choice"><input type="radio" name="weekendOk" value="No"><span class="choice-face"><svg aria-hidden="true"><use href="#icon-no"/></svg><strong>No</strong><span class="choice-mark" aria-hidden="true"></span></span></label>
+            </div>
+          </fieldset>
+          <p class="error" id="weekendChoiceError" role="alert"></p>
+          <label class="field-label" for="weekendMessage">Please write some words for me</label>
+          <textarea class="writing-paper" id="weekendMessage" placeholder="Anything on your mind..." aria-describedby="weekendMessageError" required></textarea>
+          <p class="error" id="weekendMessageError" role="alert"></p>
+          <div class="form-footer"><button class="primary" type="submit">Next <span class="arrow" aria-hidden="true">→</span></button></div>
+        </form>
+      </section>
+
+      <section class="screen" data-screen="disappear" hidden>
+        <div class="chapter-header"><p class="eyebrow">02 / The missing chapter</p><div class="progress" role="img" aria-label="Question 2 of 3"><span class="active"></span><span class="current"></span><span></span></div></div>
+        <svg class="note-illustration" viewBox="0 0 100 80" fill="none" aria-hidden="true"><path d="M17 20h55a11 11 0 0 1 11 11v23a11 11 0 0 1-11 11H48L32 75l3-10H17A11 11 0 0 1 6 54V31a11 11 0 0 1 11-11Z" fill="#f5dace"/><path d="M25 39h.1m17 0h.1m17 0h.1" stroke="#a65340" stroke-width="5" stroke-linecap="round"/><path d="m80 9 3-6m5 15 7-2m-23-4-2-6" stroke="#819683" stroke-width="2" stroke-linecap="round"/></svg>
+        <h2 tabindex="-1" id="disappearTitle">Why did you<br><span class="accent">disappear?</span></h2>
+        <p class="question-note">Life gets a little busy sometimes.<br>Tell me your side of the story.</p>
+        <form id="disappearForm" novalidate>
+          <label for="disappearReason" class="sr-only">Why did you disappear?</label>
+          <textarea class="writing-paper long-answer" id="disappearReason" placeholder="Well, here’s the thing..." aria-describedby="disappearError" required></textarea>
+          <p class="error" id="disappearError" role="alert"></p>
+          <div class="form-footer"><button class="primary" type="submit">Save &amp; Next <span class="arrow" aria-hidden="true">→</span></button></div>
+        </form>
+      </section>
+
+      <section class="screen" data-screen="kl" hidden>
+        <div class="chapter-header"><p class="eyebrow">03 / A little possibility</p><div class="progress" role="img" aria-label="Question 3 of 3"><span class="active"></span><span class="active"></span><span class="current"></span></div></div>
+        <div class="flight-tag" aria-hidden="true">YOU <span>✈</span> KUALA LUMPUR</div>
+        <h2 tabindex="-1" id="klTitle">Still considering<br><span class="accent">going to KL?</span></h2>
+        <p class="question-note">A change of scenery, perhaps?</p>
+        <form id="klForm" novalidate>
+          <fieldset aria-labelledby="klTitle" aria-describedby="klChoiceError">
+            <div class="choice-grid">
+              <label class="choice"><input type="radio" name="kl" value="Yes" required><span class="choice-face"><svg aria-hidden="true"><use href="#icon-yes"/></svg><strong>Yes</strong><span class="choice-mark" aria-hidden="true"></span></span></label>
+              <label class="choice"><input type="radio" name="kl" value="No"><span class="choice-face"><svg aria-hidden="true"><use href="#icon-no"/></svg><strong>No</strong><span class="choice-mark" aria-hidden="true"></span></span></label>
+            </div>
+          </fieldset>
+          <p class="error" id="klChoiceError" role="alert"></p>
+          <div class="reveal" id="datesReveal" aria-hidden="true" inert>
+            <div>
+              <div class="date-panel">
+                <div class="date-heading"><span>October 2026</span><small>Available: 5–9 October</small></div>
+                <fieldset id="departureField" aria-describedby="departureError"><legend>Departure Date</legend><div class="date-grid" id="departureDates"></div></fieldset>
+                <p class="error" id="departureError" role="alert"></p>
+                <fieldset id="returnField" aria-describedby="returnError"><legend>Return Date</legend><div class="date-grid" id="returnDates"></div></fieldset>
+                <p class="error" id="returnError" role="alert"></p>
+                <p class="date-hint">Pick your departure first, then your return. Same-day trips are welcome, too.</p>
+              </div>
+              <div class="little-divider" aria-hidden="true">✧</div>
+            </div>
+          </div>
+          <div class="reveal" id="reasonReveal" aria-hidden="true" inert>
+            <div class="why-not">
+              <label class="field-label" for="klReason">Why not?</label>
+              <textarea class="writing-paper" id="klReason" placeholder="No pressure. Just let me know..." aria-describedby="klReasonError" disabled></textarea>
+              <p class="error" id="klReasonError" role="alert"></p>
+            </div>
+          </div>
+          <div class="form-footer"><button class="primary" type="submit" id="finishButton">Save &amp; Finish <span class="arrow" aria-hidden="true">→</span></button></div>
+          <p id="sendingStatus" class="sr-only" role="status"></p>
+        </form>
+      </section>
+
+      <section class="screen screen--center screen--final" data-screen="final" hidden>
+        <svg class="scene" viewBox="0 0 440 280" aria-hidden="true"><use id="finalScene" href="#scene-plane"/></svg>
+        <p class="eyebrow" id="finalEyebrow"></p>
+        <h1 tabindex="-1" id="finalTitle"></h1>
+        <p class="support" id="finalSupport"></p>
+        <div class="little-divider" aria-hidden="true">♡</div>
+        <p class="signature">Until then, take care of you.</p>
+      </section>
+
+      <section class="screen screen--center screen--rejected" data-screen="rejected" hidden>
+        <svg class="scene" viewBox="0 0 440 280" aria-hidden="true"><use href="#scene-rejected"/></svg>
+        <h1 tabindex="-1" lang="id">Password salah, maaf anda tidak eligible.</h1>
+      </section>
+    </article>
+  </main>
+  <noscript><p lang="id">Aktifkan JavaScript untuk membuka halaman ini.</p></noscript>
+  <script>
+    (() => {
+      "use strict";
+
+      // Configure the existing Apps Script deployment here; keep the /exec suffix.
+      const WEBHOOK_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+      const ACCESS_PASSWORD = "happy";
+      const VALID_DATES = Object.freeze([
+        "2026-10-05", "2026-10-06", "2026-10-07", "2026-10-08", "2026-10-09"
+      ]);
+
+      const answers = {
+        weekendOk: "", weekendMessage: "", disappearReason: "",
+        kl: "", departureDate: "", returnDate: "", klReason: ""
+      };
+      let currentScreen = "password";
+      let transitioning = false;
+      let enterSent = false;
+      let answerSent = false;
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const byId = (id) => document.getElementById(id);
+      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      const transitions = {
+        password: ["welcome", "rejected"], welcome: ["weekend"],
+        weekend: ["disappear"], disappear: ["kl"], kl: ["final"]
+      };
+
+      function showScreen(next) {
+        if (transitioning || !(transitions[currentScreen] || []).includes(next)) return;
+        transitioning = true;
+        const oldScreen = document.querySelector('[data-screen="' + currentScreen + '"]');
+        const newScreen = document.querySelector('[data-screen="' + next + '"]');
+        const newButtons = newScreen.querySelectorAll("button");
+        newButtons.forEach((button) => { button.disabled = true; });
+        oldScreen.inert = true;
+        oldScreen.querySelectorAll("button").forEach((button) => { button.disabled = true; });
+        oldScreen.classList.add("leaving");
+
+        setTimeout(() => {
+          oldScreen.hidden = true;
+          oldScreen.classList.remove("leaving");
+          // A rejected visitor must refresh: remove the password form entirely.
+          if (next === "rejected") oldScreen.replaceChildren();
+          newScreen.hidden = false;
+          currentScreen = next;
+          byId("masthead").hidden = next === "rejected" || next === "final";
+          document.title = next === "welcome" ? "Hallo Wanda ♡" : "A little hello ♡";
+          window.scrollTo({ top: 0, behavior: "instant" });
+          const heading = newScreen.querySelector("h1, h2");
+          if (heading) heading.focus({ preventScroll: true });
+          setTimeout(() => {
+            transitioning = false;
+            newButtons.forEach((button) => { button.disabled = false; });
+          }, reducedMotion.matches ? 0 : 240);
+        }, reducedMotion.matches ? 0 : 180);
+      }
+
+      function setError(id, message, control) {
+        byId(id).textContent = message;
+        if (control) {
+          if (message) control.setAttribute("aria-invalid", "true");
+          else control.removeAttribute("aria-invalid");
+        }
+      }
+
+      function selected(name) {
+        const input = document.querySelector('input[name="' + name + '"]:checked');
+        return input ? input.value : "";
+      }
+
+      function focusFirst(controls) {
+        const first = controls.find(Boolean);
+        if (first) first.focus();
+        return controls.some(Boolean);
+      }
+
+      function sendWebhook(route, parameter, value) {
+        // no-cors is intentionally opaque; resolution does not confirm email delivery.
+        // Do not retry automatically: a received request may already have sent email.
+        if (WEBHOOK_URL.includes("YOUR_DEPLOYMENT_ID")) {
+          console.warn("Set WEBHOOK_URL to enable email notifications.");
+          return;
+        }
+        const url = WEBHOOK_URL.replace(/\/+$/, "") + "/" + route +
+          "?" + parameter + "=" + encodeURIComponent(value);
+        try {
+          void fetch(url, {
+            method: "GET", mode: "no-cors", cache: "no-store",
+            credentials: "omit", redirect: "follow", keepalive: true
+          }).catch((error) => console.warn("Webhook request could not be completed.", error));
+        } catch (error) {
+          console.warn("Webhook request could not be started.", error);
+        }
+      }
+
+      function formatDate(value) {
+        return Number(value.slice(-2)) + " October 2026";
+      }
+
+      function buildRecap() {
+        const lines = [
+          "Wanda's Answer", "",
+          "Weekend OK: " + answers.weekendOk,
+          "Weekend Message: " + answers.weekendMessage, "",
+          "Why Did You Disappear:", answers.disappearReason, "",
+          "Still Considering KL: " + answers.kl
+        ];
+        if (answers.kl === "Yes") {
+          lines.push("Departure Date: " + formatDate(answers.departureDate),
+            "Return Date: " + formatDate(answers.returnDate));
+        } else {
+          lines.push("Reason: " + answers.klReason);
+        }
+        return lines.join("\n");
+      }
+
+      byId("passwordForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (currentScreen !== "password" || transitioning) return;
+        if (byId("password").value !== ACCESS_PASSWORD) {
+          showScreen("rejected");
+          return;
+        }
+        byId("password").value = "";
+        if (!enterSent) {
+          enterSent = true;
+          sendWebhook("enter", "url", window.location.href);
+        }
+        showScreen("welcome");
+      });
+
+      byId("welcomeNext").addEventListener("click", () => {
+        if (currentScreen === "welcome") showScreen("weekend");
+      });
+
+      byId("weekendForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (currentScreen !== "weekend" || transitioning) return;
+        const choice = selected("weekendOk");
+        const message = byId("weekendMessage").value.trim();
+        setError("weekendChoiceError", choice ? "" : "Choose Yes or No so I know how you’re doing.");
+        setError("weekendMessageError", message ? "" : "A few words would be lovely.", byId("weekendMessage"));
+        if (focusFirst([
+          !choice && document.querySelector('input[name="weekendOk"]'),
+          !message && byId("weekendMessage")
+        ])) return;
+        answers.weekendOk = choice;
+        answers.weekendMessage = message;
+        showScreen("disappear");
+      });
+
+      byId("disappearForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        if (currentScreen !== "disappear" || transitioning) return;
+        const reason = byId("disappearReason").value.trim();
+        setError("disappearError", reason ? "" : "Write a little something before continuing.", byId("disappearReason"));
+        if (!reason) { byId("disappearReason").focus(); return; }
+        answers.disappearReason = reason;
+        showScreen("kl");
+      });
+
+      function createDates(containerId, name) {
+        const days = ["MON", "TUE", "WED", "THU", "FRI"];
+        VALID_DATES.forEach((value, index) => {
+          const label = document.createElement("label");
+          label.className = "date-choice";
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = name;
+          input.value = value;
+          input.disabled = true;
+          input.setAttribute("aria-label", formatDate(value));
+          const face = document.createElement("span");
+          face.className = "day";
+          const weekday = document.createElement("small");
+          weekday.textContent = days[index];
+          const date = document.createElement("strong");
+          date.textContent = value.slice(-2);
+          face.append(weekday, date);
+          label.append(input, face);
+          byId(containerId).append(label);
+        });
+      }
+
+      function setReveal(id, visible) {
+        const element = byId(id);
+        element.classList.toggle("is-open", visible);
+        element.setAttribute("aria-hidden", String(!visible));
+        element.inert = !visible;
+      }
+
+      function updateDateControls() {
+        document.querySelectorAll('input[name="departureDate"]').forEach((input) => {
+          input.disabled = answers.kl !== "Yes";
+          input.required = answers.kl === "Yes";
+          input.checked = input.value === answers.departureDate;
+        });
+        document.querySelectorAll('input[name="returnDate"]').forEach((input) => {
+          input.disabled = answers.kl !== "Yes" || !answers.departureDate || input.value < answers.departureDate;
+          input.required = answers.kl === "Yes";
+          input.checked = input.value === answers.returnDate;
+        });
+      }
+
+      document.querySelectorAll('input[name="kl"]').forEach((input) => {
+        input.addEventListener("change", () => {
+          if (currentScreen !== "kl" || answerSent) return;
+          answers.kl = selected("kl");
+          answers.departureDate = "";
+          answers.returnDate = "";
+          answers.klReason = "";
+          byId("klReason").value = "";
+          const wantsKL = answers.kl === "Yes";
+          setReveal("datesReveal", wantsKL);
+          setReveal("reasonReveal", !wantsKL);
+          byId("klReason").disabled = wantsKL;
+          byId("klReason").required = !wantsKL;
+          ["klChoiceError", "departureError", "returnError", "klReasonError"].forEach((id) => setError(id, ""));
+          byId("klReason").removeAttribute("aria-invalid");
+          updateDateControls();
+        });
+      });
+
+      createDates("departureDates", "departureDate");
+      createDates("returnDates", "returnDate");
+      document.querySelectorAll('input[name="departureDate"]').forEach((input) => {
+        input.addEventListener("change", () => {
+          answers.departureDate = selected("departureDate");
+          if (answers.returnDate < answers.departureDate) answers.returnDate = "";
+          updateDateControls();
+          setError("departureError", "");
+          setError("returnError", "");
+        });
+      });
+      document.querySelectorAll('input[name="returnDate"]').forEach((input) => {
+        input.addEventListener("change", () => {
+          answers.returnDate = selected("returnDate");
+          setError("returnError", "");
+        });
+      });
+
+      byId("klForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (currentScreen !== "kl" || transitioning || answerSent) return;
+        const kl = selected("kl");
+        setError("klChoiceError", kl ? "" : "Choose Yes or No to finish your little note.");
+        if (!kl) { document.querySelector('input[name="kl"]').focus(); return; }
+        answers.kl = kl;
+
+        if (kl === "Yes") {
+          const departure = selected("departureDate");
+          const returnDate = selected("returnDate");
+          const validDeparture = VALID_DATES.includes(departure);
+          const validReturn = validDeparture && VALID_DATES.includes(returnDate) && returnDate >= departure;
+          setError("departureError", validDeparture ? "" : "Choose a departure date between 5 and 9 October.");
+          setError("returnError", validReturn ? "" : "Choose a return date on or after your departure, by 9 October.");
+          if (!validDeparture || !validReturn) {
+            const name = validDeparture ? "returnDate" : "departureDate";
+            const firstDate = document.querySelector('input[name="' + name + '"]:not(:disabled)');
+            if (firstDate) firstDate.focus();
+            return;
+          }
+          answers.departureDate = departure;
+          answers.returnDate = returnDate;
+          answers.klReason = "";
+        } else {
+          const reason = byId("klReason").value.trim();
+          setError("klReasonError", reason ? "" : "Let me know why, in a few words.", byId("klReason"));
+          if (!reason) { byId("klReason").focus(); return; }
+          answers.klReason = reason;
+          answers.departureDate = "";
+          answers.returnDate = "";
+        }
+
+        // Claim submission synchronously, before starting any asynchronous work.
+        answerSent = true;
+        byId("finishButton").disabled = true;
+        byId("finishButton").textContent = "Sending your answer... 💌";
+        byId("sendingStatus").textContent = "Sending your answer...";
+        byId("klForm").inert = true;
+        sendWebhook("jawaban", "jawaban", buildRecap());
+
+        const wantsKL = answers.kl === "Yes";
+        byId("finalScene").setAttribute("href", wantsKL ? "#scene-plane" : "#scene-sleep");
+        byId("finalEyebrow").textContent = wantsKL ? "Next stop: a little adventure" : "Some other time, then";
+        byId("finalTitle").textContent = wantsKL ? "Ticket is on the way ✈️" : "It's okay, let's catch up later. 😴";
+        byId("finalSupport").textContent = wantsKL
+          ? "Pack a little bag. Bring your biggest smile. The clouds are waiting."
+          : "No rush, no pressure. A good nap and a catch-up can both wait for the right time.";
+        // Navigation never waits for an opaque response or a stalled connection.
+        await wait(reducedMotion.matches ? 350 : 1000);
+        showScreen("final");
+      });
+
+      const textErrors = {
+        weekendMessage: "weekendMessageError", disappearReason: "disappearError", klReason: "klReasonError"
+      };
+      Object.entries(textErrors).forEach(([inputId, errorId]) => {
+        byId(inputId).addEventListener("input", () => {
+          if (byId(inputId).value.trim()) setError(errorId, "", byId(inputId));
+        });
+      });
+      document.querySelectorAll('input[name="weekendOk"]').forEach((input) => {
+        input.addEventListener("change", () => setError("weekendChoiceError", ""));
+      });
+    })();
+  </script>
+</body>
+</html>
