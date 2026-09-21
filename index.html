@@ -679,8 +679,10 @@
           console.warn("Set WEBHOOK_URL to enable email notifications.");
           return;
         }
-        const url = WEBHOOK_URL.replace(/\/+$/, "") + "/" + route +
-          "?" + parameter + "=" + encodeURIComponent(value);
+        // The Apps Script handler must accept e.parameter.route as well as e.pathInfo.
+        const url = WEBHOOK_URL.replace(/\/+$/, "") +
+          "?route=" + encodeURIComponent(route) +
+          "&" + encodeURIComponent(parameter) + "=" + encodeURIComponent(value);
         try {
           void fetch(url, {
             method: "GET", mode: "no-cors", cache: "no-store",
